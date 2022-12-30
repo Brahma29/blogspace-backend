@@ -7,6 +7,7 @@ const connectDB = require("./configs/database");
 const routes = require("./routes");
 const errorHandler = require("./middlewares/errorHandler");
 const logger = require("./middlewares/logger");
+const serverless = require("serverless-http");
 
 dotenv.config();
 connectDB();
@@ -27,17 +28,20 @@ app.use(logger());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.get("/api/", (req, res) => {
+app.get("/.netlify/functions/api", (req, res) => {
   return res.status(200).json({
     message: "Api is up",
   });
 });
 
-app.use("/api/", routes);
+app.use("/.netlify/functions/api/", routes);
 
 app.use(errorHandler);
 
-app.listen(PORT, () =>
-  // eslint-disable-next-line no-console
-  console.log(`API is listening on port - ${PORT} in ${NODE_ENV} mode`)
-);
+// app.listen(PORT, () =>
+//   // eslint-disable-next-line no-console
+//   console.log(`API is listening on port - ${PORT} in ${NODE_ENV} mode`)
+// );
+
+module.exports = app;
+module.exports.handler = serverless(app);

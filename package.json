@@ -2,12 +2,10 @@
   "name": "base-backend",
   "version": "1.0.0",
   "description": "a complete blog website backend",
-  "main": "index.js",
+  "main": "./src/api.js",
   "scripts": {
-    "start": "node index",
-    "dev": "nodemon index",
-    "lint": "eslint **/*.js",
-    "lint:fix": "npm run lint -- --fix"
+    "start": "./node_modules/.bin/netlify-lambda serve src",
+    "build": "./node_modules/.bin/netlify-lambda build src"
   },
   "keywords": [
     "nodejs",
@@ -32,7 +30,9 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.12.1",
     "mongoose": "^6.8.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "netlify-lambda": "^2.0.15",
+    "serverless-http": "^3.1.0"
   },
   "devDependencies": {
     "eslint": "^8.29.0",
