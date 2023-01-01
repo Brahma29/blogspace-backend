@@ -76,9 +76,20 @@ const getUser = async (req, res, next) => {
   return undefined;
 };
 
+const getUserProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+    return success(res, `User fetched successfully`, user, 200);
+  } catch (error) {
+    next(error);
+  }
+  return undefined;
+};
+
 module.exports = {
   registerUser,
   loginUser,
   updateUser,
   getUser,
+  getUserProfile,
 };

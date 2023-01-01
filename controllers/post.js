@@ -7,17 +7,21 @@ const defaultPostCover =
 
 const addPost = async (req, res, next) => {
   try {
-    const { file } = req.files;
+    let fileUrl;
+    if (req.file) {
+      fileUrl = req.file.url;
+    }
     const { user, body } = req;
     const { title, article } = body;
     await Post.create({
       author: user._id,
       title,
       article,
-      cover: file ? file.url : defaultPostCover,
+      cover: fileUrl ? fileUrl : defaultPostCover,
     });
     return success(res, "Post added successfully", undefined, 201);
   } catch (error) {
+    console.log(error);
     next(error);
   }
   return undefined;
@@ -25,8 +29,9 @@ const addPost = async (req, res, next) => {
 
 const updatePost = async (req, res, next) => {
   try {
-    const { file } = req.file;
+    const file = req.file;
     const { body } = req;
+    console.log({ body });
     const { title, article } = body;
     const post = await Post.findById(req.params.postId);
     if (file) {
@@ -37,6 +42,7 @@ const updatePost = async (req, res, next) => {
     await post.save();
     return success(res, "Post updated successfully", undefined, 200);
   } catch (error) {
+    console.log(error);
     next(error);
   }
   return undefined;
@@ -56,7 +62,20 @@ const deletePost = async (req, res, next) => {
 
 const getPosts = async (req, res, next) => {
   try {
-    const posts = await Post.find({ deleted: false })
+    const pageSize = req.query.limit || 10;
+    const page = Number(req.query.pageNumber) || 1;
+
+    const keyword = req.query.keyword
+      ? {
+          title: {
+            $regex: req.query.keyword,
+            $options: "i",
+          },
+        }
+      : {};
+
+    const count = await Post.countDocuments({ ...keyword });
+    const posts = await Post.find({ deleted: false, ...keyword })
       .populate({
         path: "author",
         select: "first_name last_name",
@@ -73,9 +92,20 @@ const getPosts = async (req, res, next) => {
           model: "User",
           select: "first_name last_name",
         },
-      });
-    return success(res, "Posts fetched successfully", posts, 200);
+      })
+      .limit(pageSize)
+      .skip(pageSize * (page - 1));
+
+    const pages = Math.ceil(count / pageSize);
+
+    return success(
+      res,
+      "Posts fetched successfully",
+      { posts, page, pages },
+      200
+    );
   } catch (error) {
+    console.log(error);
     next(error);
   }
   return undefined;

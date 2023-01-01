@@ -9,6 +9,7 @@ const uploadFile = async (req, res, next) => {
   });
 
   try {
+    console.log(req.files);
     if (req.files) {
       const { file } = req.files;
       if (file) {
