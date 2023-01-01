@@ -3,7 +3,7 @@ const path = require("path");
 const morgan = require("morgan");
 
 const logsDirPath = path.join(__dirname, "..", "logs");
-if (!fs.existsSync(logsDirPath)) fs.mkdirSync(logsDirPath);
+// if (!fs.existsSync(logsDirPath)) fs.mkdirSync(logsDirPath);
 
 const date = new Date();
 
