@@ -6,7 +6,6 @@ const fileUpload = require("express-fileupload");
 const connectDB = require("../configs/database");
 const routes = require("../routes");
 const errorHandler = require("../middlewares/errorHandler");
-const logger = require("../middlewares/logger");
 const serverless = require("serverless-http");
 
 const router = express.Router();
@@ -25,7 +24,6 @@ app.use(
     useTempFiles: true,
   })
 );
-app.use(logger());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
